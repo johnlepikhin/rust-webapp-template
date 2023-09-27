@@ -14,5 +14,5 @@ serde_yaml = "0.9"
 slog = "2.7"
 slog-envlogger = "2.2"
 slog-scope = "4.4"
-slog-syslog = {git = "https://github.com/johnlepikhin/syslog/tree/fix/loglevel-compare", branch = "fix/loglevel-compare" }
+slog-syslog = { git = "https://github.com/johnlepikhin/syslog", branch = "fix/loglevel-compare" }
 structdoc = "0.1.4"
