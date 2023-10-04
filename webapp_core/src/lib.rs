@@ -100,7 +100,7 @@ impl crate::plugin::PluginMetadata for WebappCoreMetadata {
         })
     }
 
-    fn init_plugin(&self, _webapp: &crate::WebappCore) -> Result<Box<dyn plugin::Plugin>> {
+    fn init_plugin(&self) -> Result<Box<dyn plugin::Plugin>> {
         bail!("Core cannot be ever initialized as usual plugin")
     }
 

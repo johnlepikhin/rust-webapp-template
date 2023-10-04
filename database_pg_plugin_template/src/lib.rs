@@ -1,34 +1,26 @@
-mod api_main;
+use std::sync::Arc;
 
-use actix_web::web;
 use anyhow::Result;
-use serde::{Deserialize, Serialize};
 use structdoc::StructDoc;
 use webapp_core::plugin::{Plugin, PluginMetadata};
 
-#[derive(Serialize, Deserialize, StructDoc)]
-pub struct Config {
-    /// Some field in plugin config
-    pub test_field: String,
-}
-
-pub struct TestMetadata {
+pub struct MainDBMetadata {
     configs_path: std::path::PathBuf,
 }
 
-impl PluginMetadata for TestMetadata {
+impl PluginMetadata for MainDBMetadata {
     fn plugin_name(&self) -> &'static str {
-        "test"
+        "main_db"
     }
 
     fn config_dump(&self) -> Result<Option<String>> {
-        let config: webapp_yaml_config::yaml::Config<Config> =
+        let config: webapp_yaml_config::yaml::Config<database_pg::Config> =
             webapp_yaml_config::yaml::Config::new(&self.configs_path, self.plugin_name())?;
         config.as_yaml().map(Some)
     }
 
     fn config_documentation(&self) -> Option<String> {
-        Some(Config::document().to_string())
+        Some(database_pg::Config::document().to_string())
     }
 
     fn new(configs_path: &std::path::Path) -> Result<Self>
@@ -44,30 +36,30 @@ impl PluginMetadata for TestMetadata {
     where
         Self: Sized,
     {
-        let plugin = Test::new(self)?;
+        let plugin = MainDB::new(self)?;
         Ok(Box::new(plugin))
     }
 }
 
-pub struct Test {
-    pub config: webapp_yaml_config::yaml::Config<Config>,
-    pub zz: usize,
+pub struct MainDB {
+    pub pool: Arc<database_pg::Pool>,
 }
 
-impl Test {
-    pub fn new(metadata: &TestMetadata) -> Result<Self>
+impl MainDB {
+    pub fn new(metadata: &MainDBMetadata) -> Result<Self>
     where
         Self: Sized,
     {
-        let config =
-            webapp_yaml_config::yaml::Config::new(&metadata.configs_path, metadata.plugin_name())?;
+        let pool = database_pg::Pool::new(metadata.plugin_name(), &metadata.configs_path)?;
 
-        Ok(Self { config, zz: 1 })
+        Ok(Self {
+            pool: Arc::new(pool),
+        })
     }
 }
 
-impl Plugin for Test {
+impl Plugin for MainDB {
     fn webapp_initializer(&self, service_config: &mut actix_web::web::ServiceConfig) {
-        let _ = service_config.route("/index.html", web::get().to(crate::api_main::index));
+        let _ = service_config.app_data(self.pool.clone());
     }
 }

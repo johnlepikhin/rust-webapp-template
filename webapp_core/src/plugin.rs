@@ -15,7 +15,7 @@ pub trait PluginMetadata {
     where
         Self: Sized;
 
-    fn init_plugin(&self, webapp: &crate::WebappCore) -> Result<Box<dyn Plugin>>;
+    fn init_plugin(&self) -> Result<Box<dyn Plugin>>;
 
     fn is_core(&self) -> bool {
         false

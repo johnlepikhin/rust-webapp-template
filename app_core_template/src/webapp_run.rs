@@ -23,7 +23,7 @@ impl Run {
                 continue;
             }
 
-            let plugin = plugin_meta.init_plugin(&webapp)?;
+            let plugin = plugin_meta.init_plugin()?;
             plugins.push(Arc::new(Mutex::new(plugin)))
         }
 

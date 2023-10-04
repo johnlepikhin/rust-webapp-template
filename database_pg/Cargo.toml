@@ -1,0 +1,15 @@
+[package]
+name = "database_pg"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+deadpool = "0.10"
+deadpool-diesel = { version = "0.5.0", features = [ "postgres" ] }
+diesel = { version = "2.1", features = ["postgres", "chrono", "network-address", "uuid" ] }
+serde = { version = "1.0", features = ["derive"] }
+structdoc = "0.1.4"
+url = { version = "2", features = ["serde"] }
+
+webapp_yaml_config = { path = "../webapp_yaml_config" }
