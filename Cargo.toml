@@ -1,18 +1,24 @@
-[package]
-authors = ["{{authors}}"]
-edition = "2021"
-name = "{{project-name}}"
-version = "0.1.0"
-rust-version = "1.65"
 
-[dependencies]
-anyhow = "1.0"
-clap = {version = "4.0", features = ["derive"]}
-serde = {version = "1.0", features = ["derive"]}
-serde_json = "1.0"
-serde_yaml = "0.9"
-slog = "2.7"
-slog-envlogger = "2.2"
-slog-scope = "4.4"
-slog-syslog = { git = "https://github.com/johnlepikhin/syslog", branch = "fix/loglevel-compare" }
-structdoc = "0.1.4"
+[profile.release]
+
+lto = true
+
+[profile.fastdev]
+
+inherits = "dev"
+opt-level = 0
+debug = false
+
+[workspace]
+
+resolver = "2"
+
+members = [
+  "app_core_template",
+  # TODO
+  # "{{project-name}}",
+  "webapp_core",
+  "webapp_yaml_config",
+  # TODO
+  "test_plugin",
+]

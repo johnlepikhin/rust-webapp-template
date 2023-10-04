@@ -1,3 +1,18 @@
 [template]
-ignore = ["README.md"]
 
+cargo_generate_version = ">=0.10.0"
+
+ignore = [
+  "README.md",
+  ".cargo-generate",
+]
+
+[hooks]
+
+post = [
+  ".cargo-generate/post-hook.rhai",
+]
+
+[placeholders]
+
+license = { type = "string", prompt = "What license to use?", choices = ["APACHE", "MIT"], default = "MIT" }

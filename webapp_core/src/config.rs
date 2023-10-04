@@ -1,4 +1,3 @@
-use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 use structdoc::StructDoc;
 
@@ -27,22 +26,10 @@ impl From<LogLevel> for slog::Level {
 
 #[derive(Serialize, Deserialize, StructDoc)]
 pub struct Config {
+    /// Bind web application to specified address. For example, "127.0.0.1"
+    pub bind_address: String,
+    /// Bind web application to specified port. For example, 8080
+    pub bind_port: u16,
     /// Max log level for syslog mode
     pub log_level: LogLevel,
-}
-
-impl Config {
-    fn validate(&self) -> Result<()> {
-        Ok(())
-    }
-
-    pub fn read(file: &str) -> Result<Self> {
-        let config = std::fs::read_to_string(file)
-            .with_context(|| format!("Failed to load config file {:?}", file))?;
-        let config: Self = serde_yaml::from_str(&config)
-            .with_context(|| format!("Failed to parse config file {:?}", file))?;
-
-        config.validate()?;
-        Ok(config)
-    }
 }
