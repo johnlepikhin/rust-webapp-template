@@ -1,9 +1,11 @@
 use anyhow::Result;
+use async_trait::async_trait;
 
 pub trait Plugin: Send {
     fn webapp_initializer(&self, _service_config: &mut actix_web::web::ServiceConfig) {}
 }
 
+#[async_trait]
 pub trait PluginMetadata {
     fn plugin_name(&self) -> &'static str;
 
@@ -15,7 +17,7 @@ pub trait PluginMetadata {
     where
         Self: Sized;
 
-    fn init_plugin(&self) -> Result<Box<dyn Plugin>>;
+    async fn init_plugin(&self) -> Result<Box<dyn Plugin>>;
 
     fn is_core(&self) -> bool {
         false

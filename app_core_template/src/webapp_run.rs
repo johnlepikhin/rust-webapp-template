@@ -1,7 +1,6 @@
-use std::sync::{Arc, Mutex};
-
 use anyhow::Result;
 use clap::Args;
+use std::sync::{Arc, Mutex};
 
 #[derive(Args)]
 pub struct Run {
@@ -23,7 +22,7 @@ impl Run {
                 continue;
             }
 
-            let plugin = plugin_meta.init_plugin()?;
+            let plugin = plugin_meta.init_plugin().await?;
             plugins.push(Arc::new(Mutex::new(plugin)))
         }
 

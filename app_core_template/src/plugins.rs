@@ -8,9 +8,8 @@ fn list(configs_path: &std::path::Path) -> Result<Vec<Box<dyn PluginMetadata>>> 
     let r = vec![
         Box::new(webapp_core::WebappCoreMetadata::new(configs_path)?) as Box<dyn PluginMetadata>,
         Box::new(test_plugin::TestMetadata::new(configs_path)?) as Box<dyn PluginMetadata>,
-        Box::new(database_pg_plugin_template::MainDBMetadata::new(
-            configs_path,
-        )?) as Box<dyn PluginMetadata>,
+        Box::new(database_pg_plugin_template::Metadata::new(configs_path)?)
+            as Box<dyn PluginMetadata>,
     ];
     Ok(r)
 }

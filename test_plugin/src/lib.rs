@@ -2,6 +2,7 @@ mod api_main;
 
 use actix_web::web;
 use anyhow::Result;
+use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use structdoc::StructDoc;
 use webapp_core::plugin::{Plugin, PluginMetadata};
@@ -16,6 +17,7 @@ pub struct TestMetadata {
     configs_path: std::path::PathBuf,
 }
 
+#[async_trait]
 impl PluginMetadata for TestMetadata {
     fn plugin_name(&self) -> &'static str {
         "test"
@@ -40,7 +42,7 @@ impl PluginMetadata for TestMetadata {
         })
     }
 
-    fn init_plugin(&self) -> Result<Box<dyn Plugin>>
+    async fn init_plugin(&self) -> Result<Box<dyn Plugin>>
     where
         Self: Sized,
     {

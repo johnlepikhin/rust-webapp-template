@@ -1,14 +1,15 @@
-use std::sync::Arc;
+pub mod db;
 
 use anyhow::Result;
+use async_trait::async_trait;
 use structdoc::StructDoc;
-use webapp_core::plugin::{Plugin, PluginMetadata};
 
-pub struct MainDBMetadata {
+pub struct Metadata {
     configs_path: std::path::PathBuf,
 }
 
-impl PluginMetadata for MainDBMetadata {
+#[async_trait]
+impl webapp_core::plugin::PluginMetadata for Metadata {
     fn plugin_name(&self) -> &'static str {
         "main_db"
     }
@@ -32,34 +33,11 @@ impl PluginMetadata for MainDBMetadata {
         })
     }
 
-    fn init_plugin(&self) -> Result<Box<dyn Plugin>>
+    async fn init_plugin(&self) -> Result<Box<dyn webapp_core::plugin::Plugin>>
     where
         Self: Sized,
     {
-        let plugin = MainDB::new(self)?;
+        let plugin = crate::db::DB::new(self).await?;
         Ok(Box::new(plugin))
-    }
-}
-
-pub struct MainDB {
-    pub pool: Arc<database_pg::Pool>,
-}
-
-impl MainDB {
-    pub fn new(metadata: &MainDBMetadata) -> Result<Self>
-    where
-        Self: Sized,
-    {
-        let pool = database_pg::Pool::new(metadata.plugin_name(), &metadata.configs_path)?;
-
-        Ok(Self {
-            pool: Arc::new(pool),
-        })
-    }
-}
-
-impl Plugin for MainDB {
-    fn webapp_initializer(&self, service_config: &mut actix_web::web::ServiceConfig) {
-        let _ = service_config.app_data(self.pool.clone());
     }
 }

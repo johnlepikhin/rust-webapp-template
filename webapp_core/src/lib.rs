@@ -4,6 +4,7 @@ pub mod plugin;
 
 use actix_web::{dev::Service, App, HttpServer};
 use anyhow::{bail, Result};
+use async_trait::async_trait;
 use slog::{o, FnValue};
 use std::sync::{atomic::AtomicUsize, Arc, Mutex};
 
@@ -70,6 +71,7 @@ pub struct WebappCoreMetadata {
     configs_path: std::path::PathBuf,
 }
 
+#[async_trait]
 impl crate::plugin::PluginMetadata for WebappCoreMetadata {
     fn plugin_name(&self) -> &'static str {
         WebappCore::plugin_name()
@@ -95,7 +97,7 @@ impl crate::plugin::PluginMetadata for WebappCoreMetadata {
         })
     }
 
-    fn init_plugin(&self) -> Result<Box<dyn plugin::Plugin>> {
+    async fn init_plugin(&self) -> Result<Box<dyn plugin::Plugin>> {
         bail!("Core cannot be ever initialized as usual plugin")
     }
 

@@ -12,3 +12,4 @@ slog-scope = "4.4"
 
 webapp_yaml_config = { path = "../webapp_yaml_config" }
 webapp_core = { path = "../webapp_core" }
+async-trait = "0.1.73"

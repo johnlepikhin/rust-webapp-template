@@ -17,3 +17,4 @@ sloggers = { version = "2.1", features = [ "slog-json" ] }
 actix-web-requestid = "2.1"
 
 webapp_yaml_config = { path = "../webapp_yaml_config" }
+async-trait = "0.1.73"

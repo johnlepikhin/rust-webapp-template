@@ -11,3 +11,5 @@ structdoc = "0.1.4"
 webapp_yaml_config = { path = "../webapp_yaml_config" }
 database_pg = { path = "../database_pg" }
 webapp_core = { path = "../webapp_core" }
+diesel_migrations = { version = "2.1.0", features = ["postgres"] }
+async-trait = "0.1.73"
