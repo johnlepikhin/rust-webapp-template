@@ -1,0 +1,3 @@
+
+database_url: postgresql://user:password@localhost/mydb
+max_connections: 4
