@@ -1,5 +1,14 @@
 all: build-fast
 
+generate-webapp:
+	cargo generate -p ./.cargo-generate/templates/webapp
+
+generate-plugin:
+	cargo generate -p ./.cargo-generate/templates/plugin
+
+generate-db-postgres:
+	cargo generate -p ./.cargo-generate/templates/db_postgres
+
 build-fast:
 	cargo build --profile fastdev
 

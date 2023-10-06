@@ -1,0 +1,23 @@
+[package]
+
+authors = ["{{authors}}"]
+edition = "2021"
+name = "{{project-name}}"
+version = "0.1.0"
+rust-version = "1.70"
+license = "{{LICENSE}}"
+
+[dependencies]
+
+anyhow = "1.0"
+clap = { version = "4.0", features = ["derive"] }
+actix-web = { version = "4.4" }
+
+webapp_core = { path = "../webapp_core" }
+test_plugin = { path = "../test_plugin" }
+database_pg_plugin_template = { path = "../database_pg_plugin_template" }
+
+[package.metadata.deb]
+assets = [
+  [ "target/release/{{project-name}}", "usr/bin/", "755" ],
+]

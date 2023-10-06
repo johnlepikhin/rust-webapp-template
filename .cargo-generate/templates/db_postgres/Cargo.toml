@@ -1,0 +1,13 @@
+[package]
+name = "{{project-name}}"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0"
+actix-web = { version = "4.4" }
+structdoc = "0.1.4"
+
+webapp_yaml_config = { path = "../webapp_yaml_config" }
+database_pg = { path = "../database_pg" }
+webapp_core = { path = "../webapp_core" }
