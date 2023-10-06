@@ -1,5 +1,9 @@
 all: build-fast
 
+###############################################################################
+# Generators
+###############################################################################
+
 generate-webapp:
 	cargo generate -p ./.cargo-generate/templates/webapp
 
@@ -8,6 +12,10 @@ generate-plugin:
 
 generate-db-postgres:
 	cargo generate -p ./.cargo-generate/templates/db_postgres
+
+###############################################################################
+# Builders
+###############################################################################
 
 build-fast:
 	cargo build --profile fastdev
@@ -18,14 +26,47 @@ build-debug:
 build-release:
 	cargo build --release
 
+build-deb:
+	cargo deb -p "{{project-name}}"
+
+###############################################################################
+# Misc
+###############################################################################
+
+run:
+	cargo run -p "{{project-name}}" -- run
+
 clean:
 	cargo clean
 
 release-tag:
 	git tag v`convco version --bump`
 
-release-deb:
-	cargo deb -p "{{project-name}}"
+install-tools:
+	echo "Installing cargo-get"
+	cargo install cargo-get
+
+	echo "Installing cargo-udeps"
+	cargo install  cargo-udeps
+
+	echo "Installing cargo-outdated"
+	cargo install cargo-outdated
+
+	echo "Installing cargo-modules"
+	cargo install  cargo-modules
+
+	echo "installing cargo audit"
+	cargo install cargo-audit --features=fix
+
+	echo "Installing cargo-deb"
+	cargo install  cargo-deb
+
+	echo "Installing ripsecrets"
+	cargo install --git https://github.com/sirwart/ripsecrets --branch main
+
+###############################################################################
+# Validators
+###############################################################################
 
 check-clippy:
 	cargo clippy
@@ -51,27 +92,9 @@ check-secrets:
 
 check-all: check-clippy check-outdated-deps check-audit-deps check-cyclic-deps ripsecrets
 
-install-tools:
-	echo "Installing cargo-get"
-	cargo install cargo-get
-
-	echo "Installing cargo-udeps"
-	cargo install  cargo-udeps
-
-	echo "Installing cargo-outdated"
-	cargo install cargo-outdated
-
-	echo "Installing cargo-modules"
-	cargo install  cargo-modules
-
-	echo "installing cargo audit"
-	cargo install cargo-audit --features=fix
-
-	echo "Installing cargo-deb"
-	cargo install  cargo-deb
-
-	echo "Installing ripsecrets"
-	cargo install --git https://github.com/sirwart/ripsecrets --branch main
+###############################################################################
+# Automatic fixups
+###############################################################################
 
 fix-clippy:
 	cargo clippy --fix
