@@ -16,7 +16,7 @@ build-debug:
 	cargo build
 
 build-release:
-	cargo build --relese
+	cargo build --release
 
 clean:
 	cargo clean
