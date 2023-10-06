@@ -15,6 +15,9 @@ clean:
 release-tag:
 	git tag v`convco version --bump`
 
+release-deb:
+	cargo deb -p "{{project-name}}"
+
 check-clippy:
 	cargo clippy
 
@@ -54,6 +57,9 @@ install-tools:
 
 	echo "installing cargo audit"
 	cargo install cargo-audit --features=fix
+
+	echo "Installing cargo-deb"
+	cargo install  cargo-deb
 
 	echo "Installing ripsecrets"
 	cargo install --git https://github.com/sirwart/ripsecrets --branch main
