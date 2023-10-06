@@ -3,4 +3,6 @@
 bind_address: 127.0.0.1
 bind_port: 8080
 
-log_level: Info
+loggers:
+  - type: syslog
+    facility: daemon

@@ -1,10 +1,13 @@
 pub mod config;
+pub mod logging;
 pub mod plugin;
 
-use actix_web::{App, HttpServer};
+use actix_web::{dev::Service, App, HttpServer};
 use anyhow::{bail, Result};
-use slog::{o, Drain};
-use std::sync::{Arc, Mutex};
+use slog::{o, FnValue};
+use std::sync::{atomic::AtomicUsize, Arc, Mutex};
+
+static REQUESTS_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
 pub struct WebappCore {
     pub config: webapp_yaml_config::yaml::Config<crate::config::Config>,
@@ -16,26 +19,11 @@ impl WebappCore {
         "core"
     }
 
-    fn init_syslog_logger(log_level: slog::Level) -> Result<slog_scope::GlobalLoggerGuard> {
-        let logger = slog_syslog::SyslogBuilder::new()
-            .facility(slog_syslog::Facility::LOG_USER)
-            .level(log_level)
-            .unix("/dev/log")
-            .start()?;
-
-        let logger = slog::Logger::root(logger.fuse(), o!());
-        Ok(slog_scope::set_global_logger(logger))
-    }
-
-    fn init_env_logger() -> Result<slog_scope::GlobalLoggerGuard> {
-        Ok(slog_envlogger::init()?)
-    }
-
     fn init_logger(config: &crate::config::Config) -> Result<slog_scope::GlobalLoggerGuard> {
         if std::env::var("RUST_LOG").is_ok() {
-            Self::init_env_logger()
+            Ok(slog_envlogger::init()?)
         } else {
-            Self::init_syslog_logger(config.log_level.into())
+            config.loggers.run()
         }
     }
 
@@ -56,12 +44,19 @@ impl WebappCore {
         };
 
         HttpServer::new(move || {
-            let mut app = App::new();
+            let logger = slog_scope::logger()
+                .new(o!("request_id" => FnValue(|_| REQUESTS_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst))));
+            let mut app = App::new()
+                .wrap(actix_web::middleware::Logger::default())
+                .wrap_fn(move |req, srv| {
+                    slog_scope_futures::SlogScope::new(logger.clone(), srv.call(req))
+                });
             for plugin in &plugins {
                 let guarded_plugin = plugin.lock().unwrap();
                 app = app
                     .configure(|service_config| guarded_plugin.webapp_initializer(service_config))
             }
+
             app
         })
         .bind((bind_address, bind_port))?
