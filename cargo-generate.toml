@@ -3,14 +3,7 @@
 cargo_generate_version = ">=0.10.0"
 
 ignore = [
-  "README.md",
-  ".cargo-generate",
-]
-
-[hooks]
-
-post = [
-  ".cargo-generate/post-hook.rhai",
+  "target",
 ]
 
 [placeholders]
