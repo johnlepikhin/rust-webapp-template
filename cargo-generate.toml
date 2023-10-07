@@ -6,6 +6,10 @@ ignore = [
   "target",
 ]
 
+exclude = [
+  ".cargo-generate",
+]
+
 [placeholders]
 
 license = { type = "string", prompt = "What license to use?", choices = ["APACHE", "MIT"], default = "MIT" }

@@ -14,8 +14,6 @@ clap = { version = "4.0", features = ["derive"] }
 actix-web = { version = "4.4" }
 
 webapp_core = { path = "../webapp_core" }
-test_plugin = { path = "../test_plugin" }
-database_pg_plugin_template = { path = "../database_pg_plugin_template" }
 
 [package.metadata.deb]
 assets = [

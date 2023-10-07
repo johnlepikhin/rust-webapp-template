@@ -29,3 +29,4 @@ Session.vim
 .favorites.json
 .settings/
 
+Cargo.lock
