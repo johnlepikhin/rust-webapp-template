@@ -14,13 +14,7 @@ debug = false
 resolver = "2"
 
 members = [
-  "app_core_template",
-  # TODO
-  # "{{project-name}}",
   "webapp_core",
   "webapp_yaml_config",
   "database_pg",
-  "database_pg_plugin_template",
-  # TODO
-  "test_plugin",
 ]
