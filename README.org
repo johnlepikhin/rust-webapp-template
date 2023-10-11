@@ -26,7 +26,7 @@ The aim of this project is to provide an easy way to create ready-to-develop web
 
  * Added support for Postgresql databases, which is implemented as just another plugin
  * As usual, one can generate DB instance with command: ~make generate-db-postgres~
- * Each DB plugin has its own YAML config and DB pool. Pool is automatically registered ad Data in Actix-web framework.
+ * Each DB plugin has its own YAML config and DB pool. Pool is automatically registered as Data in Actix-web framework.
    Thus, DB pool becomes available in all HTTP endpoints.
  * Each DB plugin implements DB migrations which runs automatically at startup.
 
