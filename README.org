@@ -2,7 +2,7 @@
 * Web applications framework template
 
 The aim of this project is to provide an easy way to create ready-to-develop web applications. Repository consists of
-~cargo generate~ and Makefile. Key features available out-of-box:
+~cargo generate~ and Makefile.
 
 * Key features
 
