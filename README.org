@@ -6,7 +6,7 @@ The aim of this project is to provide an easy way to create ready-to-develop web
 
 * Key features
 
-** Core applications
+** Core applications templating
 
  * Web application on top of actix-web. One can generate multiple webapps based on the same code base.
  * Each webapp is been generated with ready-to-use command line arguments parser (crate ~clap~), structured logging (set
