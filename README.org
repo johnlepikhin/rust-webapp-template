@@ -71,6 +71,14 @@ make generate-db-postgres
 After that register it in the same was as webapp plugin and then start with diesel.toml and ~migrations~ in directory of
 new plugin.
 
+** Install required tools (optional)
+
+Actually this step is required to get full functionality of Makefile.
+
+#+BEGIN_SRC bash
+make install-tools
+#+END_SRC
+
 ** Use it!
 
 You are done. You have project with web application, config files with documentation, databases, logging, command line
