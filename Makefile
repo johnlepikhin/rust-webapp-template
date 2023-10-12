@@ -42,6 +42,9 @@ clean:
 release-tag:
 	git tag v`convco version --bump`
 
+release-changelog:
+	convco changelog
+
 install-tools:
 	echo "Installing cargo-get"
 	cargo install cargo-get
@@ -59,7 +62,10 @@ install-tools:
 	cargo install cargo-audit --features=fix
 
 	echo "Installing cargo-deb"
-	cargo install  cargo-deb
+	cargo install cargo-deb
+
+	echo "Installing convco"
+	cargo install convco
 
 	echo "Installing ripsecrets"
 	cargo install --git https://github.com/sirwart/ripsecrets --branch main
