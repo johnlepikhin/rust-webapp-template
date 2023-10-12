@@ -1,40 +1,40 @@
 
 * Web applications framework template
 
-The aim of this project is to provide an easy way to create ready-to-develop web applications. Repository consists of
-~cargo generate~ and Makefile.
+This project aims to provide an easy way to create ready-to-develop web applications. The repository consists of ~cargo
+generate~ and Makefile.
 
 * Key features
 
 ** Core applications templating
 
- * Web application on top of actix-web. One can generate multiple webapps based on the same code base.
- * Each webapp is been generated with ready-to-use command line arguments parser (crate ~clap~), structured logging (set
-   ~slog~ of crates)
- * Some sort of plugins. Plugins provides easy way to organize structured code in complicated projects.
+ * Web application on top of actix-web. One can generate multiple web apps based on the same code base.
+ * Each web app is been generated with a ready-to-use command line arguments parser (crate ~clap~), structured logging
+   (set of crates on top of ~slog~)
+ * Some sort of plugins. Plugins provide an easy way to organize code in complicated projects.
  * Plugin generator: just run ~make generate-plugin~ (see below).
 
 ** Configuration
 
- * Each plugin has it's own configuration file which is read automatically on startup.
- * Configuration file is self-documented with ~structdoc~ crate, by default webapp has sub-commands to dump config files
-   and print documentation on it.
- * Config objects are well separated from rest of code, i.e. it's easy to develop other implementations, for instance
-   etcd, or add reactive in-memory updates via inotify.
+ * Each plugin has its configuration file which is read automatically on startup.
+ * The configuration file is self-documented with ~structdoc~ crate, by default web app has sub-commands to dump config
+   files and print documentation on it.
+ * Config objects are well separated from the rest of the code, i.e. it's easy to develop other implementations, for
+   instance, etcd, or add reactive in-memory updates via inotify.
 
 ** Database support
 
  * Added support for Postgresql databases, which is implemented as just another plugin
- * As usual, one can generate DB instance with command: ~make generate-db-postgres~
- * Each DB plugin has its own YAML config and DB pool. Pool is automatically registered as Data in Actix-web framework.
-   Thus, DB pool becomes available in all HTTP endpoints.
- * Each DB plugin implements DB migrations which runs automatically at startup.
+ * As usual, one can generate a DB instance with the command: ~make generate-db-postgres~
+ * Each DB plugin has its own YAML config and DB pool. The pool is automatically registered as Data in Actix-web
+   framework. Thus, the DB pool becomes available in all HTTP endpoints.
+ * Each DB plugin implements DB migrations which run automatically at startup.
 
 ** Infrastructure
 
 Makefile contains some useful targets:
- * Check code with clippy
- * Check and fix modules and dependencies with cargo audit, udeps and so on.
+ * Check the code with clippy
+ * Check and fix modules and dependencies with cargo audit, udeps, and so on.
  * Install dependencies
  * Generate *.deb package
  * Fast build with no debug symbols
@@ -43,22 +43,22 @@ Makefile contains some useful targets:
 
 ** Generate web application
 
-Just run command and type application (crate) name:
+Just run the command and type the application (crate) name:
 
 #+BEGIN_SRC bash
 make generate-webapp
 #+END_SRC
 
-Directory with new webapp will be appeared. Now manually add it to workspace in Cargo.toml.
+A directory with a new web app will appear. Now manually add it to the workspace in Cargo.toml.
 
-** Add webapp plugin
+** Add web app plugin
 
 #+BEGIN_SRC bash
 make generate-plugin
 #+END_SRC
 
-After plugin is been generated, manual actions required:
- 1. Add it to workspace in Cargo.toml
+After the plugin is been generated, manual actions are required:
+ 1. Add it to the workspace in Cargo.toml
  2. Set unique plugin name in PLUGIN_DIRECTORY/src/lib.rs → plugin_name()
  3. Register it in WEBAPP_DIRECTORY/src/plugins.rs → list()
 
@@ -68,12 +68,12 @@ After plugin is been generated, manual actions required:
 make generate-db-postgres
 #+END_SRC
 
-After that register it in the same was as webapp plugin and then start with diesel.toml and ~migrations~ in directory of
-new plugin.
+After that register it in the same way as web app plugin and then start with diesel.toml and ~migrations~ in the
+directory of the new plugin.
 
 ** Install required tools (optional)
 
-Actually this step is required to get full functionality of Makefile.
+Actually, this step is required to get full functionality of Makefile.
 
 #+BEGIN_SRC bash
 make install-tools
@@ -81,5 +81,5 @@ make install-tools
 
 ** Use it!
 
-You are done. You have project with web application, config files with documentation, databases, logging, command line
-interface.
+You are done. You have a project with web application, config files with documentation, databases, logging, and command
+line interface.
