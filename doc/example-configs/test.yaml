@@ -1,3 +1,5 @@
 ---
 
 test_field: sdf
+
+secret: SOME_SECRET_PASSWORD

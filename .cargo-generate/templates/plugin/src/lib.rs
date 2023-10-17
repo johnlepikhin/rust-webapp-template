@@ -7,10 +7,11 @@ use serde::{Deserialize, Serialize};
 use structdoc::StructDoc;
 use webapp_core::plugin::{Plugin, PluginMetadata};
 
-#[derive(Serialize, Deserialize, StructDoc)]
+#[derive(Serialize, Deserialize, StructDoc, Clone)]
 pub struct Config {
     /// Some field in plugin config
     pub test_field: String,
+    pub secret: webapp_yaml_config::secret::SecUtf8,
 }
 
 pub struct Metadata {
@@ -70,6 +71,8 @@ impl PluginImpl {
 
 impl Plugin for PluginImpl {
     fn webapp_initializer(&self, service_config: &mut paperclip_actix::web::ServiceConfig) {
-        let _ = service_config.route("/index.html", web::get().to(crate::api_main::index));
+        let _ = service_config
+            .route("/index.html", web::get().to(crate::api_main::index))
+            .app_data(actix_web::web::Data::new(self.config.clone()));
     }
 }
