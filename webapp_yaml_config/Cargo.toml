@@ -9,3 +9,4 @@ serde_yaml = "0.9"
 serde = { version = "1.0", features = ["derive"] }
 url = { version = "2", features = ["serde"] }
 structdoc = "0.1.4"
+secstr = { version = "0.5.1", features = ["serde"] }
