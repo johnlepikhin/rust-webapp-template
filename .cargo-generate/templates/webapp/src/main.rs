@@ -7,25 +7,33 @@ mod webapp_run;
 
 const CONFIGS_DEFAULT_PATH: &str = "/etc/{{project-name}}/";
 
-// Example of subcommands
+/// Operations on config files
+#[derive(Subcommand)]
+enum CommandConfig {
+    /// Dump parsed config file. Helps to find typos
+    Dump,
+    /// Print config files documentation
+    Documentation,
+}
+
+/// {{project-name}} main command
 #[derive(Subcommand)]
 enum CommandLine {
-    /// Dump parsed config file. Helps to find typos
-    ConfigDump,
-    /// Print config file documentation
-    ConfigDocumentation,
+    /// Operations on config files
+    #[command(subcommand)]
+    Config(CommandConfig),
     /// Run web application
     Run(crate::webapp_run::Run),
 }
 
-/// Example of simple cli program
+/// Application command line
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct ApplicationCommandLine {
-    /// Path to configuration file
+    /// Path to configuration files
     #[clap(short, default_value = CONFIGS_DEFAULT_PATH)]
     configs_path: String,
-    /// Subcommand
+    /// Command to run
     #[clap(subcommand)]
     command: CommandLine,
 }
@@ -79,11 +87,11 @@ impl Application {
 
     async fn run_command(&self) -> Result<()> {
         match &self.command_line.command {
-            CommandLine::ConfigDump => {
+            CommandLine::Config(CommandConfig::Dump) => {
                 self.config_dump();
                 Ok(())
             }
-            CommandLine::ConfigDocumentation => {
+            CommandLine::Config(CommandConfig::Documentation) => {
                 self.config_documentation();
                 Ok(())
             }
