@@ -39,6 +39,8 @@ Makefile contains some useful targets:
  * Generate *.deb package
  * Fast build with no debug symbols
 
+Optional support for OpenAPI and Swagger documentation generator implemented with help of ~paperclip~ crate.
+
 * Getting started
 
 ** Generate web application

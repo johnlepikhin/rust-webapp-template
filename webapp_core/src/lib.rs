@@ -5,6 +5,7 @@ pub mod plugin;
 use actix_web::{dev::Service, App, HttpServer};
 use anyhow::{bail, Result};
 use async_trait::async_trait;
+use paperclip::actix::OpenApiExt;
 use slog::{o, FnValue};
 use std::sync::{atomic::AtomicUsize, Arc, Mutex};
 
@@ -51,14 +52,26 @@ impl WebappCore {
                 .wrap(actix_web::middleware::Logger::default())
                 .wrap_fn(move |req, srv| {
                     slog_scope_futures::SlogScope::new(logger.clone(), srv.call(req))
-                });
+                })
+                .wrap_api()
+                ;
             for plugin in &plugins {
                 let guarded_plugin = plugin.lock().unwrap();
                 app = app
                     .configure(|service_config| guarded_plugin.webapp_initializer(service_config))
             }
 
-            app
+            if let Some(openapi) = self.config.with_config(|config| Ok(config.openapi.clone())).unwrap() {
+                let app = app
+                    .with_json_spec_at(&openapi.spec_uri);
+                let app = match openapi.swagger_uri {
+                    Some(v) => app.with_swagger_ui_at(&v),
+                    None => app,
+                };
+                app.build()
+            } else {
+                app.build()
+            }
         })
         .bind((bind_address, bind_port))?
         .run()

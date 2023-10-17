@@ -6,3 +6,7 @@ bind_port: 8080
 loggers:
   - type: syslog
     facility: daemon
+
+openapi:
+  spec_uri: /doc/openapi.json
+  swagger_uri: /doc/openapi

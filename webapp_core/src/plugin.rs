@@ -2,7 +2,7 @@ use anyhow::Result;
 use async_trait::async_trait;
 
 pub trait Plugin: Send {
-    fn webapp_initializer(&self, _service_config: &mut actix_web::web::ServiceConfig) {}
+    fn webapp_initializer(&self, _service_config: &mut paperclip_actix::web::ServiceConfig) {}
 }
 
 #[async_trait]

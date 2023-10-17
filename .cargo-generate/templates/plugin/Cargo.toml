@@ -10,6 +10,8 @@ actix-web = { version = "4.4" }
 structdoc = "0.1.4"
 slog-scope = "4.4"
 async-trait = "0.1.73"
+paperclip = { version = "0.8", features = ["actix4"] }
+paperclip-actix = { version = "0.6", features = [ "actix4" ] }
 
 webapp_yaml_config = { path = "../webapp_yaml_config" }
 webapp_core = { path = "../webapp_core" }
