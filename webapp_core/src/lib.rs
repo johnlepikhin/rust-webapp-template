@@ -98,7 +98,15 @@ impl crate::plugin::PluginMetadata for WebappCoreMetadata {
 
     fn config_documentation(&self) -> Option<String> {
         use structdoc::StructDoc;
-        Some(crate::config::Config::document().to_string())
+
+        let sample_config = serde_yaml::to_string(&crate::config::Config::default()).unwrap();
+
+        let r = format!(
+            "{}\n\nExample config:\n\n{}",
+            crate::config::Config::document(),
+            sample_config
+        );
+        Some(r)
     }
 
     fn new(configs_path: &std::path::Path) -> Result<Self>

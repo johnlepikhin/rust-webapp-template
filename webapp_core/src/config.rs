@@ -9,6 +9,15 @@ pub struct OpenAPI {
     pub swagger_uri: Option<String>,
 }
 
+impl Default for OpenAPI {
+    fn default() -> Self {
+        Self {
+            spec_uri: "/doc/openapi.json".to_owned(),
+            swagger_uri: Some("/doc/swagger".to_owned()),
+        }
+    }
+}
+
 #[derive(Serialize, Deserialize, StructDoc, Clone)]
 pub struct Config {
     /// Bind web application to specified address. For example, "127.0.0.1"
@@ -19,4 +28,15 @@ pub struct Config {
     pub loggers: crate::logging::Loggers,
     /// Enable OpenAPI/Swagger documentation for HTTP API
     pub openapi: Option<OpenAPI>,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            bind_address: "127.0.0.1".to_owned(),
+            bind_port: 8080,
+            loggers: Default::default(),
+            openapi: Some(OpenAPI::default()),
+        }
+    }
 }
