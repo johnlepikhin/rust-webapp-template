@@ -40,7 +40,7 @@ impl DB {
 }
 
 impl webapp_core::plugin::Plugin for DB {
-    fn webapp_initializer(&self, service_config: &mut actix_web::web::ServiceConfig) {
+    fn webapp_initializer(&self, service_config: &mut paperclip_actix::web::ServiceConfig) {
         let _ = service_config.app_data(self.pool.clone());
     }
 }
