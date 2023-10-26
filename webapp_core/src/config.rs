@@ -19,6 +19,12 @@ impl Default for OpenAPI {
 }
 
 #[derive(Serialize, Deserialize, StructDoc, Clone)]
+pub struct CORS {
+    /// Allowed origins
+    pub origins: Vec<webapp_yaml_config::url::Url>,
+}
+
+#[derive(Serialize, Deserialize, StructDoc, Clone)]
 pub struct Config {
     /// Bind web application to specified address. For example, "127.0.0.1"
     pub bind_address: String,
@@ -28,6 +34,8 @@ pub struct Config {
     pub loggers: crate::logging::Loggers,
     /// Enable OpenAPI/Swagger documentation for HTTP API
     pub openapi: Option<OpenAPI>,
+    /// CORS configuration
+    pub cors: Option<CORS>,
 }
 
 impl Default for Config {
@@ -37,6 +45,7 @@ impl Default for Config {
             bind_port: 8080,
             loggers: Default::default(),
             openapi: Some(OpenAPI::default()),
+            cors: None,
         }
     }
 }

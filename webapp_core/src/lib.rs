@@ -39,6 +39,18 @@ impl WebappCore {
         })
     }
 
+    fn get_cors(config: &crate::config::Config) -> actix_cors::Cors {
+        if let Some(cors_config) = config.cors.clone() {
+            let mut cors = actix_cors::Cors::default();
+            for origin in &cors_config.origins {
+                cors = cors.allowed_origin(origin.as_str());
+            }
+            cors
+        } else {
+            actix_cors::Cors::permissive()
+        }
+    }
+
     pub async fn run(self, plugins: Vec<Arc<Mutex<Box<dyn crate::plugin::Plugin>>>>) -> Result<()> {
         let (bind_address, bind_port) = {
             self.config
@@ -48,13 +60,19 @@ impl WebappCore {
         HttpServer::new(move || {
             let logger = slog_scope::logger()
                 .new(o!("request_id" => FnValue(|_| REQUESTS_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst))));
+
+        let cors = self
+            .config
+            .with_config(|config| Ok(Self::get_cors(&config)))
+            .unwrap();
+
             let mut app = App::new()
                 .wrap(actix_web::middleware::Logger::default())
                 .wrap_fn(move |req, srv| {
                     slog_scope_futures::SlogScope::new(logger.clone(), srv.call(req))
                 })
-                .wrap_api()
-                ;
+                .wrap(cors)
+                .wrap_api();
             for plugin in &plugins {
                 let guarded_plugin = plugin.lock().unwrap();
                 app = app
