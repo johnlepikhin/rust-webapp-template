@@ -61,10 +61,10 @@ impl WebappCore {
             let logger = slog_scope::logger()
                 .new(o!("request_id" => FnValue(|_| REQUESTS_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst))));
 
-        let cors = self
-            .config
-            .with_config(|config| Ok(Self::get_cors(&config)))
-            .unwrap();
+            let cors = self
+                .config
+                .with_config(|config| Ok(Self::get_cors(&config)))
+                .unwrap();
 
             let mut app = App::new()
                 .wrap(actix_web::middleware::Logger::default())
