@@ -4,6 +4,7 @@ use std::sync::Arc;
 pub const MIGRATIONS: diesel_migrations::EmbeddedMigrations =
     diesel_migrations::embed_migrations!();
 
+#[derive(Clone)]
 pub struct DB {
     pub pool: Arc<database_pg::Pool>,
 }
@@ -41,6 +42,6 @@ impl DB {
 
 impl webapp_core::plugin::Plugin for DB {
     fn webapp_initializer(&self, service_config: &mut paperclip_actix::web::ServiceConfig) {
-        let _ = service_config.app_data(self.pool.clone());
+        let _ = service_config.app_data(self.clone());
     }
 }
