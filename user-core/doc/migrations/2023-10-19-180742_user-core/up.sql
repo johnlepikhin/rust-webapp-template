@@ -30,3 +30,4 @@ comment on column user_session.requests_count is 'How many API requests user don
 comment on column user_session.last_address is 'Last user address';
 
 create index user_session_token on user_session(token);
+create index user_username on "user"(username);
