@@ -1,12 +1,11 @@
 use anyhow::{anyhow, Result};
-// TODO использовать мьютексы tokio
-use std::sync::{Arc, Mutex, MutexGuard};
+use std::sync::Arc;
 
 #[derive(Clone)]
 pub struct Config<CONFIG> {
     pub name: &'static str,
     pub path: std::path::PathBuf,
-    pub config: Arc<Mutex<CONFIG>>,
+    pub config: Arc<CONFIG>,
 }
 
 impl<CONFIG> Config<CONFIG>
@@ -28,22 +27,12 @@ where
         Ok(Self {
             name,
             path,
-            config: Arc::new(Mutex::new(config)),
+            config: Arc::new(config),
         })
     }
 
-    pub fn with_config<R, CB>(&self, cb: CB) -> Result<R>
-    where
-        CB: FnOnce(MutexGuard<CONFIG>) -> Result<R>,
-    {
-        let v = self
-            .config
-            .lock()
-            .map_err(|_err| anyhow!("Cannot lock mutex for config {:?}", self.name))?;
-        cb(v)
-    }
-
     pub fn as_yaml(&self) -> Result<String> {
-        self.with_config(|config| Ok(serde_yaml::to_string(&*config)?))
+        Ok(serde_yaml::to_string(&*self.config)?)
+        // self.with_config(|config| Ok(serde_yaml::to_string(&*config)?))
     }
 }

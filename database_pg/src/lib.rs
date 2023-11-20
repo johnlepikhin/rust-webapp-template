@@ -1,5 +1,3 @@
-use std::sync::MutexGuard;
-
 use anyhow::{anyhow, Result};
 use deadpool_diesel::postgres::Manager;
 use serde::{Deserialize, Serialize};
@@ -20,19 +18,17 @@ pub struct Pool {
 
 impl Pool {
     pub fn new(plugin_name: &'static str, configs_path: &std::path::Path) -> Result<Self> {
-        let config = webapp_yaml_config::yaml::Config::new(configs_path, plugin_name)?;
+        let config: webapp_yaml_config::yaml::Config<Config> =
+            webapp_yaml_config::yaml::Config::new(configs_path, plugin_name)?;
 
-        let pool = config.with_config(|config: MutexGuard<Config>| {
-            let manager = Manager::new(
-                config.database_url.unsecure(),
-                deadpool_diesel::Runtime::Tokio1,
-            );
-            use deadpool_diesel::postgres::Pool;
-            let pool = Pool::builder(manager)
-                .max_size(config.max_connections)
-                .build()?;
-            Ok(pool)
-        })?;
+        let manager = Manager::new(
+            config.config.database_url.unsecure(),
+            deadpool_diesel::Runtime::Tokio1,
+        );
+        use deadpool_diesel::postgres::Pool;
+        let pool = Pool::builder(manager)
+            .max_size(config.config.max_connections)
+            .build()?;
 
         Ok(Self { config, pool })
     }
