@@ -22,3 +22,5 @@ paperclip-actix = { version = "0.6", features = [ "actix4" ] }
 webapp_yaml_config = { path = "../webapp_yaml_config" }
 async-trait = "0.1.73"
 actix-cors = "0.6.4"
+humantime-serde = "1.1.1"
+

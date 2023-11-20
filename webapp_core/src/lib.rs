@@ -57,12 +57,12 @@ impl WebappCore {
                 .with_config(|c| Ok((c.bind_address.clone(), c.bind_port)))?
         };
 
+        let app_config = self.config.clone();
         HttpServer::new(move || {
             let logger = slog_scope::logger()
                 .new(o!("request_id" => FnValue(|_| REQUESTS_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst))));
 
-            let cors = self
-                .config
+            let cors = app_config
                 .with_config(|config| Ok(Self::get_cors(&config)))
                 .unwrap();
 
@@ -79,7 +79,7 @@ impl WebappCore {
                     .configure(|service_config| guarded_plugin.webapp_initializer(service_config))
             }
 
-            if let Some(openapi) = self.config.with_config(|config| Ok(config.openapi.clone())).unwrap() {
+            if let Some(openapi) = app_config.with_config(|config| Ok(config.openapi.clone())).unwrap() {
                 let app = app
                     .with_json_spec_at(&openapi.spec_uri);
                 let app = match openapi.swagger_uri {
@@ -91,6 +91,8 @@ impl WebappCore {
                 app.build()
             }
         })
+            .keep_alive(self.config.with_config(|config| Ok(config.keep_alive)).unwrap())
+            .shutdown_timeout(self.config.with_config(|config| Ok(config.shutdown_timeout)).unwrap().as_secs())
         .bind((bind_address, bind_port))?
         .run()
         .await?;

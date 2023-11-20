@@ -30,6 +30,12 @@ pub struct Config {
     pub bind_address: String,
     /// Bind web application to specified port. For example, 8080
     pub bind_port: u16,
+    /// Keep-alive HTTP timeout
+    #[serde(with = "humantime_serde")]
+    pub keep_alive: std::time::Duration,
+    /// Shutdown timeout for active HTTP connections
+    #[serde(with = "humantime_serde")]
+    pub shutdown_timeout: std::time::Duration,
     /// Logging configuration
     pub loggers: crate::logging::Loggers,
     /// Enable OpenAPI/Swagger documentation for HTTP API
@@ -43,6 +49,8 @@ impl Default for Config {
         Self {
             bind_address: "127.0.0.1".to_owned(),
             bind_port: 8080,
+            keep_alive: std::time::Duration::from_secs(75),
+            shutdown_timeout: std::time::Duration::from_secs(5),
             loggers: Default::default(),
             openapi: Some(OpenAPI::default()),
             cors: None,
