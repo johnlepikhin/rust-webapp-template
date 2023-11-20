@@ -11,7 +11,7 @@ use webapp_core::SESSION_COOKIE_NAME;
     security(("session_cookie" = []), ("authorization_header" = [])),
     tag = "User",
     )]
-#[post("/api/v1/logout")]
+#[post("/api/v1/user/session/logout")]
 pub async fn logout(
     user: crate::user::User,
     db: Data<test_db::db::DB>,
