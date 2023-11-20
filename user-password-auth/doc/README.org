@@ -1,0 +1,5 @@
+
+* Getting started
+
+This plugin uses database and requires extra action. Just copy the contents of "migrations" directory to corresponding
+directory in database's plugin.
