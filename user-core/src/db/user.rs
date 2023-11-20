@@ -36,4 +36,23 @@ impl User {
             .get_result(db)?;
         Ok(r)
     }
+
+    pub fn of_username(db: &mut diesel::PgConnection, username: &str) -> Result<User> {
+        let r = user::dsl::user
+            .filter(user::dsl::username.eq(username))
+            .get_result(db)
+            .map_err(|err| anyhow!("Failed to get user: {err}"))?;
+        Ok(r)
+    }
+
+    pub fn logged_in(&self, db: &mut diesel::PgConnection) -> Result<()> {
+        diesel::update(user::dsl::user.find(self.id))
+            .set((
+                user::dsl::last_seen_date.eq(Some(chrono::Utc::now())),
+                user::dsl::login_count.eq(user::dsl::login_count + 1),
+            ))
+            .execute(db)
+            .map_err(|err| anyhow!("Failed to update user: {err}"))?;
+        Ok(())
+    }
 }
