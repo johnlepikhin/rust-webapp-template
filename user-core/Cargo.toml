@@ -18,3 +18,5 @@ futures-util = "0.3.28"
 ipnet = "2.9.0"
 actix-http = "3.4.0"
 utoipa = { version = "4.1.0", features = ["actix_extras"] }
+rand = "0.8.5"
+secstr = "0.5.1"
