@@ -1,5 +1,7 @@
+use actix_web::web::Data;
 use anyhow::Result;
 use std::sync::Arc;
+use utoipa::OpenApi;
 
 pub const MIGRATIONS: diesel_migrations::EmbeddedMigrations =
     diesel_migrations::embed_migrations!();
@@ -41,7 +43,16 @@ impl DB {
 }
 
 impl webapp_core::plugin::Plugin for DB {
-    fn webapp_initializer(&self, service_config: &mut paperclip_actix::web::ServiceConfig) {
-        let _ = service_config.app_data(self.clone());
+    fn webapp_initializer(
+        &self,
+        service_config: &mut actix_web::web::ServiceConfig,
+    ) -> utoipa::openapi::OpenApi {
+        let _ = service_config.app_data(Data::new(self.clone()));
+
+        #[derive(OpenApi)]
+        #[openapi()]
+        struct ApiDoc;
+
+        ApiDoc::openapi()
     }
 }

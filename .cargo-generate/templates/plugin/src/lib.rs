@@ -2,9 +2,9 @@ mod api_main;
 
 use anyhow::Result;
 use async_trait::async_trait;
-use paperclip_actix::web;
 use serde::{Deserialize, Serialize};
 use structdoc::StructDoc;
+use utoipa::OpenApi;
 use webapp_core::plugin::{Plugin, PluginMetadata};
 
 #[derive(Serialize, Deserialize, StructDoc, Clone)]
@@ -70,9 +70,18 @@ impl PluginImpl {
 }
 
 impl Plugin for PluginImpl {
-    fn webapp_initializer(&self, service_config: &mut paperclip_actix::web::ServiceConfig) {
+    fn webapp_initializer(
+        &self,
+        service_config: &mut actix_web::web::ServiceConfig,
+    ) -> utoipa::openapi::OpenApi {
         let _ = service_config
-            .route("/index.html", web::get().to(crate::api_main::index))
+            .service(crate::api_main::index)
             .app_data(actix_web::web::Data::new(self.config.clone()));
+
+        #[derive(OpenApi)]
+        #[openapi(paths(crate::api_main::index,))]
+        struct ApiDoc;
+
+        ApiDoc::openapi()
     }
 }

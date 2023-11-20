@@ -1,15 +1,17 @@
-use actix_web::Responder;
-use paperclip::actix::api_v2_operation;
+use actix_web::get;
 
 /// This is sample main page
-#[api_v2_operation]
+#[utoipa::path(
+    responses(
+        (status = 200, description = "Sample main page"),
+    ),
+    tag = "HTML pages",
+    )]
+#[get("/index.html")]
 pub async fn index(
-    config: paperclip_actix::web::Data<webapp_yaml_config::yaml::Config<crate::Config>>,
-) -> impl Responder {
-    let my_secret = config
-        .with_config(|config| Ok(config.secret.clone()))
-        .unwrap();
-    slog_scope::info!("plugin secret is {:?}", my_secret);
+    config: actix_web::web::Data<webapp_yaml_config::yaml::Config<crate::Config>>,
+) -> &'static str {
+    slog_scope::info!("plugin secret is {:?}", config.config.secret);
 
     "Hello world!"
 }
