@@ -1,5 +1,5 @@
 pub mod api;
-mod db;
+pub mod db;
 pub mod user;
 
 use anyhow::Result;
