@@ -1,4 +1,4 @@
-use anyhow::Result;
+use anyhow::{anyhow, Result};
 use diesel::prelude::*;
 use test_db::schema::user;
 
@@ -33,7 +33,8 @@ impl User {
                 username,
                 person,
             })
-            .get_result(db)?;
+            .get_result(db)
+            .map_err(|err| anyhow!("Failed to add user: {err}"))?;
         Ok(r)
     }
 
