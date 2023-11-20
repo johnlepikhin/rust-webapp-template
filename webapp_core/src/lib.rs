@@ -1,3 +1,4 @@
+mod apidoc;
 pub mod config;
 pub mod logging;
 pub mod plugin;
@@ -5,9 +6,11 @@ pub mod plugin;
 use actix_web::{dev::Service, App, HttpServer};
 use anyhow::{bail, Result};
 use async_trait::async_trait;
-use paperclip::actix::OpenApiExt;
 use slog::{o, FnValue};
 use std::sync::{atomic::AtomicUsize, Arc, Mutex};
+use utoipa_swagger_ui::SwaggerUi;
+
+pub const SESSION_COOKIE_NAME: &str = "session";
 
 static REQUESTS_COUNTER: AtomicUsize = AtomicUsize::new(0);
 
@@ -30,8 +33,9 @@ impl WebappCore {
     }
 
     pub fn new(configs_path: &std::path::Path) -> Result<Self> {
-        let config = webapp_yaml_config::yaml::Config::new(configs_path, Self::plugin_name())?;
-        let logger_guard = config.with_config(|config| Self::init_logger(&config))?;
+        let config: webapp_yaml_config::yaml::Config<crate::config::Config> =
+            webapp_yaml_config::yaml::Config::new(configs_path, Self::plugin_name())?;
+        let logger_guard = Self::init_logger(&config.config)?;
 
         Ok(Self {
             config,
@@ -52,50 +56,41 @@ impl WebappCore {
     }
 
     pub async fn run(self, plugins: Vec<Arc<Mutex<Box<dyn crate::plugin::Plugin>>>>) -> Result<()> {
-        let (bind_address, bind_port) = {
-            self.config
-                .with_config(|c| Ok((c.bind_address.clone(), c.bind_port)))?
-        };
-
-        let app_config = self.config.clone();
+        let config = Arc::new(self.config);
+        let app_config = config.clone();
         HttpServer::new(move || {
             let logger = slog_scope::logger()
                 .new(o!("request_id" => FnValue(|_| REQUESTS_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst))));
-
-            let cors = app_config
-                .with_config(|config| Ok(Self::get_cors(&config)))
-                .unwrap();
-
+            let cors = Self::get_cors(&app_config.config);
+            let mut apidoc = crate::apidoc::new();
             let mut app = App::new()
                 .wrap(actix_web::middleware::Logger::default())
                 .wrap_fn(move |req, srv| {
                     slog_scope_futures::SlogScope::new(logger.clone(), srv.call(req))
                 })
-                .wrap(cors)
-                .wrap_api();
+                .wrap(cors);
             for plugin in &plugins {
                 let guarded_plugin = plugin.lock().unwrap();
                 app = app
-                    .configure(|service_config| guarded_plugin.webapp_initializer(service_config))
+                    .configure(|service_config| {
+                        let plugin_apidoc = guarded_plugin.webapp_initializer(service_config);
+                        apidoc.merge(plugin_apidoc)
+                    })
             }
-
-            if let Some(openapi) = app_config.with_config(|config| Ok(config.openapi.clone())).unwrap() {
-                let app = app
-                    .with_json_spec_at(&openapi.spec_uri);
-                let app = match openapi.swagger_uri {
-                    Some(v) => app.with_swagger_ui_at(&v),
-                    None => app,
-                };
-                app.build()
-            } else {
-                app.build()
+            if let Some(openapi) = &app_config.config.openapi {
+                app = app
+                    .service(
+                        SwaggerUi::new(format!("{}/{{_:.*}}", openapi.swagger_uri))
+                            .url(openapi.spec_uri.clone(), apidoc),
+                    );
             }
-        })
-            .keep_alive(self.config.with_config(|config| Ok(config.keep_alive)).unwrap())
-            .shutdown_timeout(self.config.with_config(|config| Ok(config.shutdown_timeout)).unwrap().as_secs())
-        .bind((bind_address, bind_port))?
-        .run()
-        .await?;
+            app
+            })
+            .keep_alive(config.config.keep_alive)
+            .shutdown_timeout(config.config.shutdown_timeout.as_secs())
+            .bind((config.config.bind_address.clone(), config.config.bind_port))?
+            .run()
+            .await?;
         Ok(())
     }
 }

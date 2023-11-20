@@ -1,8 +1,18 @@
 use anyhow::Result;
 use async_trait::async_trait;
+use utoipa::OpenApi;
 
 pub trait Plugin: Send {
-    fn webapp_initializer(&self, _service_config: &mut paperclip_actix::web::ServiceConfig) {}
+    fn webapp_initializer(
+        &self,
+        _service_config: &mut actix_web::web::ServiceConfig,
+    ) -> utoipa::openapi::OpenApi {
+        #[derive(OpenApi)]
+        #[openapi()]
+        struct ApiDoc;
+
+        ApiDoc::openapi()
+    }
 }
 
 #[async_trait]
