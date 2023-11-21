@@ -23,4 +23,5 @@ actix-cors = "0.6.4"
 humantime-serde = "1.1.1"
 utoipa = { version = "4.1.0", features = ["actix_extras"] }
 utoipa-swagger-ui = { version = "4.0.0", features = ["actix-web"] }
+secstr = "0.5.1"
 

@@ -12,6 +12,7 @@ slog-scope = "4.4"
 async-trait = "0.1.73"
 diesel = { version = "2.1", features = ["chrono", "ipnet-address" ] }
 webapp_core = { path = "../webapp_core" }
+database_pg = { path = "../database_pg" }
 test-db = { path = "../test-db" }
 chrono = "0.4.31"
 futures-util = "0.3.28"

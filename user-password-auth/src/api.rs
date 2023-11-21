@@ -1,14 +1,11 @@
 use actix_http::StatusCode;
 use actix_web::{
-    cookie::Cookie,
     post,
     web::{self, Data},
-    HttpRequest, HttpResponse, HttpResponseBuilder, Responder,
+    HttpRequest, Responder,
 };
-use secstr::SecStr;
 use serde::{Deserialize, Serialize};
 use utoipa::ToSchema;
-use webapp_core::SESSION_COOKIE_NAME;
 
 /// Data required for login
 #[derive(Deserialize, ToSchema, Debug, Clone)]
@@ -16,14 +13,14 @@ pub struct LoginRequest {
     /// User login
     username: String,
     /// User password
-    password: SecStr,
+    password: webapp_core::secstr::SecUtf8,
 }
 
 /// Response for login
 #[derive(Serialize, ToSchema)]
 pub struct LoginResponse {
     /// Session token
-    token: String,
+    token: webapp_core::secstr::SecUtf8,
 }
 
 /// Creates new session for user
@@ -56,9 +53,12 @@ pub async fn login(
         .with_transaction(move |conn| {
             let user =
                 user_core::db::user::User::of_username(conn, &login_request_transaction.username)?;
-            crate::db::user_password::UserPassword::of_user(conn, &user)?
-                .validate_password(&login_request_transaction.password)?;
             user.logged_in(conn)?;
+            crate::db::user_password::UserPassword::of_user(conn, &user)?.validate_password(
+                &database_pg::secstr::SecUtf8::from(Into::<secstr::SecUtf8>::into(
+                    login_request_transaction.password,
+                )),
+            )?;
             user_core::db::user_session::UserSession::new(conn, &user, client_ip.ip().into())
         })
         .await
@@ -71,6 +71,6 @@ pub async fn login(
         })?;
 
     Ok(web::Json(LoginResponse {
-        token: user_token.token,
+        token: webapp_core::secstr::SecUtf8::from(Into::<secstr::SecUtf8>::into(user_token.token)),
     }))
 }

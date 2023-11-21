@@ -9,7 +9,7 @@ use test_db::schema::user_session;
 pub struct UserSession {
     pub id: i64,
     pub user_id: Option<i64>,
-    pub token: String,
+    pub token: database_pg::secstr::SecUtf8,
     pub create_date: chrono::DateTime<chrono::Utc>,
     pub last_seen_date: chrono::DateTime<chrono::Utc>,
     pub requests_count: i64,
@@ -20,7 +20,7 @@ pub struct UserSession {
 #[diesel(table_name = user_session)]
 pub struct UserSessionNew {
     pub user_id: Option<i64>,
-    token: String,
+    token: database_pg::secstr::SecUtf8,
     pub create_date: chrono::DateTime<chrono::Utc>,
     pub last_seen_date: chrono::DateTime<chrono::Utc>,
     pub requests_count: i64,
@@ -34,6 +34,7 @@ impl UserSessionNew {
             .take(64)
             .map(char::from)
             .collect();
+        let token = database_pg::secstr::SecUtf8::from(token);
         Self {
             user_id: Some(user.id),
             token,

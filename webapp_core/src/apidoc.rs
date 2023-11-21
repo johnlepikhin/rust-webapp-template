@@ -1,7 +1,13 @@
-use utoipa::openapi::security::{ApiKey, ApiKeyValue, SecurityScheme};
+use utoipa::{
+    openapi::security::{ApiKey, ApiKeyValue, SecurityScheme},
+    ToSchema,
+};
 
 pub fn new() -> utoipa::openapi::OpenApi {
-    let mut components = utoipa::openapi::Components::new();
+    let (secstr_name, secstr) = crate::secstr::SecUtf8::schema();
+    let mut components = utoipa::openapi::ComponentsBuilder::new()
+        .schema(secstr_name, secstr)
+        .build();
     components.add_security_scheme(
         "session_cookie",
         SecurityScheme::ApiKey(ApiKey::Cookie(ApiKeyValue::new(crate::SESSION_COOKIE_NAME))),

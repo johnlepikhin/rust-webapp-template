@@ -15,6 +15,7 @@ utoipa = { version = "4.1.0", features = ["actix_extras"] }
 serde = { version = "1.0", features = ["derive"] }
 structdoc = "0.1.4"
 webapp_yaml_config = { path = "../webapp_yaml_config" }
+database_pg = { path = "../database_pg" }
 user-core = { path = "../user-core" }
 rand_core = "0.6.4"
 argon2 = "0.5.2"

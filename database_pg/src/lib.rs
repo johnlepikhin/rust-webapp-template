@@ -1,3 +1,5 @@
+pub mod secstr;
+
 use anyhow::{anyhow, Result};
 use deadpool_diesel::postgres::Manager;
 use serde::{Deserialize, Serialize};
