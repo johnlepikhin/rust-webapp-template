@@ -2,6 +2,7 @@ mod apidoc;
 pub mod config;
 pub mod logging;
 pub mod plugin;
+pub mod response;
 pub mod secstr;
 
 use actix_web::{dev::Service, App, HttpServer};

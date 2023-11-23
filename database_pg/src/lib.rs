@@ -1,3 +1,4 @@
+pub mod paginate;
 pub mod secstr;
 
 use anyhow::{anyhow, Result};

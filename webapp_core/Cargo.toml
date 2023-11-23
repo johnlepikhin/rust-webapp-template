@@ -24,4 +24,5 @@ humantime-serde = "1.1.1"
 utoipa = { version = "4.1.0", features = ["actix_extras"] }
 utoipa-swagger-ui = { version = "4.0.0", features = ["actix-web"] }
 secstr = "0.5.1"
+serde_json = "1.0.108"
 
