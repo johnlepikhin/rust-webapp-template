@@ -18,6 +18,7 @@ chrono = { version = "0.4.31", features = ["serde"] }
 futures-util = "0.3.28"
 ipnet = "2.9.0"
 actix-http = "3.4.0"
-utoipa = { version = "4.1.0", features = ["actix_extras"] }
+utoipa = { version = "4.1.0", features = ["actix_extras", "chrono"] }
 rand = "0.8.5"
 secstr = "0.5.1"
+react-admin = { path = "../react-admin" }

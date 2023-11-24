@@ -1,5 +1,9 @@
 use actix_http::StatusCode;
 use actix_web::{cookie::Cookie, get, post, web::Data, HttpResponse, HttpResponseBuilder};
+use react_admin::{
+    request_list::{PaginatedRequest, ProcessedPaginatedRequest},
+    APIList,
+};
 use serde::Serialize;
 use utoipa::ToSchema;
 use webapp_core::SESSION_COOKIE_NAME;
@@ -33,7 +37,7 @@ pub async fn logout(
 
 /// Element of user list
 #[derive(Serialize, ToSchema)]
-pub struct UserListUser {
+pub struct UserListResponse {
     /// Internal user ID
     pub id: i64,
     /// When user was created
@@ -51,26 +55,28 @@ pub struct UserListUser {
 /// Gets list of users
 #[utoipa::path(
     responses(
-        (status = OK, description = "User list", body = [UserListUser], content_type = "application/json",
+        (status = OK, description = "User list", body = [UserListResponse], content_type = "application/json",
          headers(
              ("X-Total-Count" = usize, description = "Total count of users"),
          ))),
+    params(PaginatedRequest),
     tag = "User",
     )]
 #[get("/api/v1/user")]
 async fn user_list(
     db: Data<test_db::db::DB>,
-) -> actix_web::error::Result<webapp_core::response::APIList<UserListUser>> {
+    pagination: ProcessedPaginatedRequest,
+) -> actix_web::error::Result<APIList<UserListResponse>> {
     let (list, count) = db
         .pool
         .with_transaction(move |conn| {
-            use database_pg::paginate::*;
             use diesel::prelude::*;
+            use react_admin::db::*;
             use test_db::schema::user;
 
             let r = user::table
                 .select(user::all_columns)
-                .paginate(1, 2)
+                .paginate(pagination.offset, pagination.limit)
                 .load_and_count_pages::<crate::db::user::User>(conn)?;
             Ok(r)
         })
@@ -81,7 +87,7 @@ async fn user_list(
 
     let list = list
         .into_iter()
-        .map(|v| UserListUser {
+        .map(|v| UserListResponse {
             id: v.id,
             create_date: v.create_date,
             last_seen_date: v.last_seen_date,
@@ -91,5 +97,5 @@ async fn user_list(
         })
         .collect();
 
-    webapp_core::response::APIList::ok(list, count)
+    APIList::ok(list, count)
 }

@@ -62,7 +62,7 @@ impl Plugin for PluginImpl {
         #[derive(OpenApi)]
         #[openapi(
             paths(crate::api::logout, crate::api::user_list),
-            components(schemas(crate::api::UserListUser))
+            components(schemas(crate::api::UserListResponse))
         )]
         struct ApiDoc;
 
