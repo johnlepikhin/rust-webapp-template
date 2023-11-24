@@ -9,34 +9,24 @@ use diesel::sql_types::BigInt;
 #[derive(Debug, Clone, Copy, QueryId)]
 pub struct Paginated<T> {
     query: T,
-    page: i64,
-    per_page: i64,
     offset: i64,
+    limit: i64,
 }
 pub trait Paginate: Sized {
-    fn paginate(self, page: i64, per_page: i64) -> Paginated<Self>;
+    fn paginate(self, offset: i64, limit: i64) -> Paginated<Self>;
 }
 
 impl<T> Paginate for T {
-    fn paginate(self, page: i64, per_page: i64) -> Paginated<Self> {
+    fn paginate(self, offset: i64, limit: i64) -> Paginated<Self> {
         Paginated {
             query: self,
-            per_page,
-            page,
-            offset: (page - 1) * per_page,
+            offset,
+            limit,
         }
     }
 }
 
 impl<T> Paginated<T> {
-    pub fn per_page(self, per_page: i64) -> Self {
-        Paginated {
-            per_page,
-            offset: (self.page - 1) * per_page,
-            ..self
-        }
-    }
-
     pub fn load_and_count_pages<'a, U>(self, conn: &mut PgConnection) -> QueryResult<(Vec<U>, i64)>
     where
         Self: LoadQuery<'a, PgConnection, (U, i64)>,
@@ -62,7 +52,7 @@ where
         out.push_sql("SELECT *, COUNT(*) OVER () FROM (");
         self.query.walk_ast(out.reborrow())?;
         out.push_sql(") t LIMIT ");
-        out.push_bind_param::<BigInt, _>(&self.per_page)?;
+        out.push_bind_param::<BigInt, _>(&self.limit)?;
         out.push_sql(" OFFSET ");
         out.push_bind_param::<BigInt, _>(&self.offset)?;
         Ok(())

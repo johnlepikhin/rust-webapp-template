@@ -1,3 +1,6 @@
+pub mod db;
+pub mod request_list;
+
 use actix_web::body::BoxBody;
 
 pub struct APIList<DATA> {

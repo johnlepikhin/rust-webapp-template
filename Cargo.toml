@@ -17,4 +17,5 @@ members = [
   "webapp_core",
   "webapp_yaml_config",
   "database_pg",
+  "react-admin"
 ]

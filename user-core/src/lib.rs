@@ -55,10 +55,15 @@ impl Plugin for PluginImpl {
         &self,
         service_config: &mut actix_web::web::ServiceConfig,
     ) -> utoipa::openapi::OpenApi {
-        let _ = service_config.service(crate::api::logout);
+        let _ = service_config
+            .service(crate::api::logout)
+            .service(crate::api::user_list);
 
         #[derive(OpenApi)]
-        #[openapi(paths(crate::api::logout,))]
+        #[openapi(
+            paths(crate::api::logout, crate::api::user_list),
+            components(schemas(crate::api::UserListUser))
+        )]
         struct ApiDoc;
 
         ApiDoc::openapi()

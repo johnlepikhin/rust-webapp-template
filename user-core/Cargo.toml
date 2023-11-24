@@ -14,7 +14,7 @@ diesel = { version = "2.1", features = ["chrono", "ipnet-address" ] }
 webapp_core = { path = "../webapp_core" }
 database_pg = { path = "../database_pg" }
 test-db = { path = "../test-db" }
-chrono = "0.4.31"
+chrono = { version = "0.4.31", features = ["serde"] }
 futures-util = "0.3.28"
 ipnet = "2.9.0"
 actix-http = "3.4.0"
