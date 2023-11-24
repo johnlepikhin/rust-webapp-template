@@ -32,3 +32,26 @@ impl<DATA: serde::Serialize> actix_web::Responder for APIList<DATA> {
             .body(body)
     }
 }
+
+pub struct APIObject<DATA>(DATA);
+
+impl<DATA> APIObject<DATA> {
+    pub fn new(val: DATA) -> APIObject<DATA> {
+        Self(val)
+    }
+
+    pub fn ok(val: DATA) -> actix_web::Result<APIObject<DATA>> {
+        Ok(Self::new(val))
+    }
+}
+
+impl<DATA: serde::Serialize> actix_web::Responder for APIObject<DATA> {
+    type Body = BoxBody;
+
+    fn respond_to(self, _req: &actix_web::HttpRequest) -> actix_web::HttpResponse<Self::Body> {
+        let body: String = serde_json::ser::to_string(&self.0).unwrap();
+        actix_web::HttpResponseBuilder::new(actix_web::http::StatusCode::OK)
+            .append_header((actix_web::http::header::CONTENT_TYPE, "application/json"))
+            .body(body)
+    }
+}
