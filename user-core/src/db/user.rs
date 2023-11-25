@@ -6,6 +6,7 @@ use test_db::schema::user;
 #[diesel(table_name = user)]
 pub struct User {
     pub id: i64,
+    pub object_id: i64,
     pub create_date: chrono::DateTime<chrono::Utc>,
     pub last_seen_date: Option<chrono::DateTime<chrono::Utc>>,
     pub login_count: i64,

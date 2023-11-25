@@ -40,6 +40,8 @@ pub async fn logout(
 pub struct UserListResponse {
     /// Internal user ID
     pub id: i64,
+    /// Internal object ID
+    pub object_id: i64,
     /// When user was created
     pub create_date: chrono::DateTime<chrono::Utc>,
     /// When authenticated user used API last time
@@ -89,6 +91,7 @@ async fn user_list(
         .into_iter()
         .map(|v| UserListResponse {
             id: v.id,
+            object_id: v.object_id,
             create_date: v.create_date,
             last_seen_date: v.last_seen_date,
             login_count: v.login_count,
