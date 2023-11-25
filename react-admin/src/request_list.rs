@@ -42,6 +42,12 @@ impl actix_web::FromRequest for ProcessedPaginatedRequest {
             ));
         }
 
+        if query.end - query.start > 1000 {
+            return futures::future::err(actix_web::error::ErrorBadRequest(
+                "Maximum number of records in paginated output is 1000",
+            ));
+        }
+
         futures::future::ok(ProcessedPaginatedRequest {
             offset: query.start as i64,
             limit: query.end as i64 - query.start as i64,
