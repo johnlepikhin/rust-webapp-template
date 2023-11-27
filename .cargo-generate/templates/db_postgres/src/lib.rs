@@ -11,7 +11,7 @@ pub struct Metadata {
 #[async_trait]
 impl webapp_core::plugin::PluginMetadata for Metadata {
     fn plugin_name(&self) -> &'static str {
-        "main_db"
+        "{{project-name}}"
     }
 
     fn config_dump(&self) -> Result<Option<String>> {

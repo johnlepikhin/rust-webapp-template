@@ -10,6 +10,12 @@ generate-webapp:
 generate-plugin:
 	cargo generate -p ./.cargo-generate/templates/plugin
 
+generate-user-core:
+	cargo generate -p ./.cargo-generate/templates/user-core
+
+generate-user-password-auth:
+	cargo generate -p ./.cargo-generate/templates/user-password-auth
+
 generate-db-postgres:
 	cargo generate -p ./.cargo-generate/templates/db_postgres
 

@@ -1,0 +1,9 @@
+
+[placeholders.db-plugin]
+type = "string"
+prompt = "Name of DB plugin (crate name) to use?"
+
+[hooks]
+pre = [
+    "cargo-generate-pre.rhai"
+]
