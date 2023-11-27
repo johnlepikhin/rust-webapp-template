@@ -21,3 +21,4 @@ utoipa = { version = "4.1.0", features = ["actix_extras", "chrono"] }
 rand = "0.8.5"
 secstr = "0.5.1"
 react-admin = { path = "../react-admin" }
+database_pg = { path = "../database_pg" }

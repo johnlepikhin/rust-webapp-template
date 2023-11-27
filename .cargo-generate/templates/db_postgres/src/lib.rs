@@ -1,4 +1,5 @@
 pub mod db;
+pub mod schema;
 
 use anyhow::Result;
 use async_trait::async_trait;
