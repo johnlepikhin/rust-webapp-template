@@ -8,7 +8,6 @@ use test_db::schema::user_session;
 #[diesel(table_name = user_session)]
 pub struct UserSession {
     pub id: i64,
-    pub object_id: i64,
     pub user_id: Option<i64>,
     pub token: database_pg::secstr::SecUtf8,
     pub create_date: chrono::DateTime<chrono::Utc>,

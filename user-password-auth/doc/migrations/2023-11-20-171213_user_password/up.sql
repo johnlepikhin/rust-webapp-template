@@ -1,6 +1,6 @@
 
 create table "user_password" (
-  id bigserial primary key,
+  id bigint not null primary key default nextval('object_id_seq'),
   user_id bigint not null unique references "user"(id) on delete cascade,
   last_updated_date timestamptz not null default current_timestamp,
   password_hash varchar(255) not null
