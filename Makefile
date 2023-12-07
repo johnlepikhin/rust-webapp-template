@@ -7,6 +7,9 @@ all: build-fast
 generate-webapp:
 	cargo generate -p ./.cargo-generate/templates/webapp
 
+generate-cli-tool:
+	cargo generate -p ./.cargo-generate/templates/cli-tool
+
 generate-plugin:
 	cargo generate -p ./.cargo-generate/templates/plugin
 
