@@ -12,6 +12,12 @@ license = ""
 anyhow = "1.0"
 clap = { version = "4.0", features = ["derive"] }
 actix-web = { version = "4.4" }
+slog-envlogger = "2.2"
+slog-scope = "4.4"
+slog = "2.7.0"
+slog-term = "2.9.0"
+slog-async = "2.8.0"
+slog-stdlog = "4.1.1"
 
 webapp_core = { path = "../webapp_core" }
 
