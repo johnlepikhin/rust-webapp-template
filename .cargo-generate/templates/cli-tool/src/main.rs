@@ -22,7 +22,7 @@ enum CommandLine {
     /// Operations on config files
     #[command(subcommand)]
     Config(CommandConfig),
-    /// Run web application
+    /// Run CLI application
     Run(crate::application::Run),
 }
 
