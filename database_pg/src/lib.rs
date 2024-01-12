@@ -1,4 +1,5 @@
 pub mod secstr;
+pub mod sync;
 
 use anyhow::{anyhow, Result};
 use deadpool_diesel::postgres::Manager;

@@ -9,6 +9,7 @@ pub const MIGRATIONS: diesel_migrations::EmbeddedMigrations =
 #[derive(Clone)]
 pub struct DB {
     pub pool: Arc<database_pg::Pool>,
+    pub sync_pool: Arc<database_pg::sync::Pool>,
 }
 
 impl DB {
@@ -18,9 +19,12 @@ impl DB {
     {
         use webapp_core::plugin::PluginMetadata;
         let pool = database_pg::Pool::new(metadata.plugin_name(), &metadata.configs_path)?;
+        let sync_pool =
+            database_pg::sync::Pool::new(metadata.plugin_name(), &metadata.configs_path)?;
 
         let r = Self {
             pool: Arc::new(pool),
+            sync_pool: Arc::new(sync_pool),
         };
 
         r.run_pending_migrations().await?;
