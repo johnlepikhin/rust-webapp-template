@@ -45,7 +45,12 @@ impl Secret {
                 Ok(v)
             }
             Self::FromCommand(cmd) => {
-                let v = std::process::Command::new(cmd).output()?.stdout;
+                slog_scope::debug!("Running secret keeping command {:?}", cmd);
+                let v = std::process::Command::new(format!("/bin/sh"))
+                    .args(&["-c", cmd.as_str()])
+                    .output()
+                    .map_err(|err| anyhow!("Failed to run secret keeping command: {}", err))?
+                    .stdout;
                 let v = String::from_utf8(v)?;
                 Ok(v)
             }
