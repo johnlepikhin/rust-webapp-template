@@ -9,7 +9,7 @@ use structdoc::StructDoc;
 #[derive(Serialize, Deserialize, StructDoc)]
 pub struct Config {
     /// Postgres DB URL, see https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNSTRING
-    pub database_url: webapp_yaml_config::secret::SecUtf8,
+    pub database_url: webapp_yaml_config::secret::Secret,
     /// Maximum number of connections to keep opened
     pub max_connections: usize,
 }
@@ -25,7 +25,7 @@ impl Pool {
             webapp_yaml_config::yaml::Config::new(configs_path, plugin_name)?;
 
         let manager = Manager::new(
-            config.config.database_url.unsecure(),
+            config.config.database_url.unsecure()?,
             deadpool_diesel::Runtime::Tokio1,
         );
         use deadpool_diesel::postgres::Pool;

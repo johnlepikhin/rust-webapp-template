@@ -12,7 +12,8 @@ impl Pool {
         let config: webapp_yaml_config::yaml::Config<crate::Config> =
             webapp_yaml_config::yaml::Config::new(configs_path, plugin_name)?;
 
-        let manager = ConnectionManager::<PgConnection>::new(config.config.database_url.unsecure());
+        let manager =
+            ConnectionManager::<PgConnection>::new(config.config.database_url.unsecure()?);
         let pool = diesel::r2d2::Pool::builder().build(manager)?;
 
         Ok(Self { config, pool })

@@ -1,4 +1,6 @@
 ---
 
-database_url: postgresql://
+database_url:
+  !String
+  postgresql://
 max_connections: 4
