@@ -1,3 +1,4 @@
+use anyhow::anyhow;
 use serde::{Deserialize, Serialize};
 use std::ops::Deref;
 use structdoc::{Documentation, StructDoc};
@@ -52,7 +53,7 @@ impl Secret {
                     .map_err(|err| anyhow!("Failed to run secret keeping command: {}", err))?
                     .stdout;
                 let v = String::from_utf8(v)?;
-                Ok(v)
+                Ok(v.trim_end().to_owned())
             }
         }
     }
