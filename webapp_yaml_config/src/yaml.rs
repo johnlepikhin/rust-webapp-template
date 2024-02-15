@@ -1,4 +1,5 @@
 use anyhow::{anyhow, Result};
+use std::ops::Deref;
 use std::sync::Arc;
 
 #[derive(Clone)]
@@ -37,7 +38,7 @@ where
     }
 }
 
-impl<CONFIG> std::ops::Deref for Config<CONFIG> {
+impl<CONFIG> Deref for Config<CONFIG> {
     type Target = CONFIG;
 
     fn deref(&self) -> &Self::Target {

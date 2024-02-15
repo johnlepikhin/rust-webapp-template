@@ -47,8 +47,8 @@ impl Secret {
             }
             Self::FromCommand(cmd) => {
                 tracing::debug!("Running secret keeping command {:?}", cmd);
-                let v = std::process::Command::new(format!("/bin/sh"))
-                    .args(&["-c", cmd.as_str()])
+                let v = std::process::Command::new("/bin/sh")
+                    .args(["-c", cmd.as_str()])
                     .output()
                     .map_err(|err| anyhow!("Failed to run secret keeping command: {}", err))?
                     .stdout;
