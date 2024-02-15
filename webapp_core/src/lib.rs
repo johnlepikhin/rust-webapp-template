@@ -4,20 +4,17 @@ pub mod logging;
 pub mod plugin;
 pub mod secstr;
 
-use actix_web::{dev::Service, App, HttpServer};
+use actix_web::{App, HttpServer};
 use anyhow::{bail, Result};
 use async_trait::async_trait;
-use slog::{o, FnValue};
-use std::sync::{atomic::AtomicUsize, Arc, Mutex};
+use std::sync::{Arc, Mutex};
+use tracing_actix_web::TracingLogger;
 use utoipa_swagger_ui::SwaggerUi;
 
 pub const SESSION_COOKIE_NAME: &str = "session";
 
-static REQUESTS_COUNTER: AtomicUsize = AtomicUsize::new(0);
-
 pub struct WebappCore {
     pub config: webapp_yaml_config::yaml::Config<crate::config::Config>,
-    _logger_guard: slog_scope::GlobalLoggerGuard,
 }
 
 impl WebappCore {
@@ -25,23 +22,12 @@ impl WebappCore {
         "core"
     }
 
-    fn init_logger(config: &crate::config::Config) -> Result<slog_scope::GlobalLoggerGuard> {
-        if std::env::var("RUST_LOG").is_ok() {
-            Ok(slog_envlogger::init()?)
-        } else {
-            config.loggers.run()
-        }
-    }
-
     pub fn new(configs_path: &std::path::Path) -> Result<Self> {
         let config: webapp_yaml_config::yaml::Config<crate::config::Config> =
             webapp_yaml_config::yaml::Config::new(configs_path, Self::plugin_name())?;
-        let logger_guard = Self::init_logger(&config.config)?;
+        config.logger.init()?;
 
-        Ok(Self {
-            config,
-            _logger_guard: logger_guard,
-        })
+        Ok(Self { config })
     }
 
     fn get_cors(config: &crate::config::Config) -> actix_cors::Cors {
@@ -60,38 +46,57 @@ impl WebappCore {
         let config = Arc::new(self.config);
         let app_config = config.clone();
         HttpServer::new(move || {
-            let logger = slog_scope::logger()
-                .new(o!("request_id" => FnValue(|_| REQUESTS_COUNTER.fetch_add(1, std::sync::atomic::Ordering::SeqCst))));
             let cors = Self::get_cors(&app_config.config);
             let mut apidoc = crate::apidoc::new();
             let mut app = App::new()
-                .wrap(actix_web::middleware::Logger::default())
-                .wrap_fn(move |req, srv| {
-                    slog_scope_futures::SlogScope::new(logger.clone(), srv.call(req))
+                .wrap_fn(|req, srv| {
+                    use actix_web::{
+                        dev::Service,
+                        http::header::{HeaderName, HeaderValue},
+                        HttpMessage,
+                    };
+                    use tracing_actix_web::RequestId;
+                    let request_id = req
+                        .extensions()
+                        .get::<RequestId>()
+                        .copied()
+                        .map(|v| v.to_string())
+                        .unwrap_or_default();
+                    let res = srv.call(req);
+                    async move {
+                        tracing::debug!("New request");
+                        let mut res = res.await?;
+                        res.headers_mut().insert(
+                            HeaderName::from_static("x-request-id"),
+                            // this unwrap never fails, since UUIDs are valid ASCII strings
+                            HeaderValue::from_str(&request_id.to_string()).unwrap(),
+                        );
+                        Ok(res)
+                    }
                 })
+                .wrap(TracingLogger::default())
+                .wrap(actix_web_opentelemetry::RequestTracing::new())
                 .wrap(cors);
             for plugin in &plugins {
                 let guarded_plugin = plugin.lock().unwrap();
-                app = app
-                    .configure(|service_config| {
-                        let plugin_apidoc = guarded_plugin.webapp_initializer(service_config);
-                        apidoc.merge(plugin_apidoc)
-                    })
+                app = app.configure(|service_config| {
+                    let plugin_apidoc = guarded_plugin.webapp_initializer(service_config);
+                    apidoc.merge(plugin_apidoc)
+                })
             }
             if let Some(openapi) = &app_config.config.openapi {
-                app = app
-                    .service(
-                        SwaggerUi::new(format!("{}/{{_:.*}}", openapi.swagger_uri))
-                            .url(openapi.spec_uri.clone(), apidoc),
-                    );
+                app = app.service(
+                    SwaggerUi::new(format!("{}/{{_:.*}}", openapi.swagger_uri))
+                        .url(openapi.spec_uri.clone(), apidoc),
+                );
             }
             app
-            })
-            .keep_alive(config.config.keep_alive)
-            .shutdown_timeout(config.config.shutdown_timeout.as_secs())
-            .bind((config.config.bind_address.clone(), config.config.bind_port))?
-            .run()
-            .await?;
+        })
+        .keep_alive(config.config.keep_alive)
+        .shutdown_timeout(config.config.shutdown_timeout.as_secs())
+        .bind((config.config.bind_address.clone(), config.config.bind_port))?
+        .run()
+        .await?;
         Ok(())
     }
 }

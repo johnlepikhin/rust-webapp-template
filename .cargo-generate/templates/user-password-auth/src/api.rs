@@ -39,7 +39,7 @@ pub async fn login(
 ) -> actix_web::error::Result<impl Responder> {
     let client_ip = match req.peer_addr() {
         None => {
-            slog_scope::error!("No peer address available");
+            tracing::error!("No peer address available");
             actix_web::error::Result::Err(actix_web::error::InternalError::new(
                 "No such user or password is incorrect",
                 StatusCode::FORBIDDEN,
@@ -63,7 +63,7 @@ pub async fn login(
         })
         .await
         .map_err(|err| {
-            slog_scope::warn!("Login failed for request {:?}: {err}", login_request);
+            tracing::warn!("Login failed for request {:?}: {err}", login_request);
             actix_web::error::InternalError::new(
                 "No such user or password is incorrect",
                 StatusCode::FORBIDDEN,

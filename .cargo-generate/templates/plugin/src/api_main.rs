@@ -11,7 +11,7 @@ use actix_web::get;
 pub async fn index(
     config: actix_web::web::Data<webapp_yaml_config::yaml::Config<crate::Config>>,
 ) -> &'static str {
-    slog_scope::info!("plugin secret is {:?}", config.config.secret);
+    tracing::info!("plugin secret is {:?}", config.config.secret);
 
     "Hello world!"
 }

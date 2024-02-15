@@ -46,7 +46,7 @@ impl Secret {
                 Ok(v)
             }
             Self::FromCommand(cmd) => {
-                slog_scope::debug!("Running secret keeping command {:?}", cmd);
+                tracing::debug!("Running secret keeping command {:?}", cmd);
                 let v = std::process::Command::new(format!("/bin/sh"))
                     .args(&["-c", cmd.as_str()])
                     .output()

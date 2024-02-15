@@ -10,7 +10,7 @@ generate~ and Makefile.
 
  * Web application on top of actix-web. One can generate multiple web apps based on the same code base.
  * Each web app is been generated with a ready-to-use command line arguments parser (crate ~clap~), structured logging
-   (set of crates on top of ~slog~)
+   (set of crates on top of ~tracing~)
  * Some sort of plugins. Plugins provide an easy way to organize code in complicated projects.
  * Plugin generator: just run ~make generate-plugin~ (see below).
 

@@ -36,3 +36,11 @@ where
         // self.with_config(|config| Ok(serde_yaml::to_string(&*config)?))
     }
 }
+
+impl<CONFIG> std::ops::Deref for Config<CONFIG> {
+    type Target = CONFIG;
+
+    fn deref(&self) -> &Self::Target {
+        &self.config
+    }
+}

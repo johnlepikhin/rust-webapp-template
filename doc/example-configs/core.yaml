@@ -6,9 +6,7 @@ bind_port: 8080
 keep_alive: 30s
 shutdown_timeout: 5s
 
-loggers:
-  - type: syslog
-    facility: daemon
+logger: journald
 
 openapi:
   spec_uri: /doc/openapi.json

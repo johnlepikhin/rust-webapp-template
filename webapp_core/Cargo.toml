@@ -9,12 +9,6 @@ serde = { version = "1.0", features = ["derive"] }
 serde_yaml = "0.9"
 actix-web = { version = "4.4" }
 structdoc = "0.1.4"
-slog = "2.7"
-slog-scope = "4.4"
-slog-scope-futures = "0.1"
-slog-async = "2.8"
-slog-envlogger = "2.2"
-sloggers = { version = "2.1", features = [ "slog-json" ] }
 actix-web-requestid = "2.1"
 
 webapp_yaml_config = { path = "../webapp_yaml_config" }
@@ -25,4 +19,11 @@ utoipa = { version = "4.1.0", features = ["actix_extras"] }
 utoipa-swagger-ui = { version = "4.0.0", features = ["actix-web"] }
 secstr = "0.5.1"
 serde_json = "1.0.108"
+futures-util = "0.3.30"
+tracing-log = "0.2.0"
+tracing-subscriber = "0.3.18"
+tracing-actix-web = { version = "0.7.9", features = ["opentelemetry_0_21"] }
+tracing = "0.1.40"
+actix-web-opentelemetry = "0.16.0"
+tracing-journald = "0.3.0"
 

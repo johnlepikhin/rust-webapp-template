@@ -37,7 +37,7 @@ pub struct Config {
     #[serde(with = "humantime_serde")]
     pub shutdown_timeout: std::time::Duration,
     /// Logging configuration
-    pub loggers: crate::logging::Loggers,
+    pub logger: crate::logging::Logger,
     /// Enable OpenAPI/Swagger documentation for HTTP API
     pub openapi: Option<OpenAPI>,
     /// CORS configuration
@@ -51,7 +51,7 @@ impl Default for Config {
             bind_port: 8080,
             keep_alive: std::time::Duration::from_secs(75),
             shutdown_timeout: std::time::Duration::from_secs(5),
-            loggers: Default::default(),
+            logger: Default::default(),
             openapi: Some(OpenAPI::default()),
             cors: None,
         }
