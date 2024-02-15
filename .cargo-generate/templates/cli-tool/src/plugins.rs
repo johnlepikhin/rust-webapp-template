@@ -6,7 +6,7 @@ use webapp_core::plugin::PluginMetadata;
 fn list(configs_path: &std::path::Path) -> Result<Vec<Box<dyn PluginMetadata>>> {
     // TODO simplify casting
     let r = vec![
-        // Box::new(main_db::Metadata::new(configs_path)?) as Box<dyn PluginMetadata>,
+        // Box::new({{db_plugin}}::Metadata::new(configs_path)?) as Box<dyn PluginMetadata>,
     ];
     Ok(r)
 }

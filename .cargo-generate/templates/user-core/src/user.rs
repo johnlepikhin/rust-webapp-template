@@ -36,11 +36,9 @@ impl actix_web::FromRequest for User {
         let token = match token {
             Some(v) => v,
             None => {
-                return Box::pin(async move {
-                    Err(actix_web::error::ErrorForbidden(
-                        "Authorization header nor session cookie are not provided",
-                    ))
-                })
+                return Box::pin(
+                    async move { Err(actix_web::error::ErrorForbidden("Not authorized")) },
+                )
             }
         };
         let db = match req.app_data::<Data<{{db_plugin}}::db::DB>>() {

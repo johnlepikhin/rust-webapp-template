@@ -12,7 +12,7 @@ pub struct Metadata {}
 #[async_trait]
 impl PluginMetadata for Metadata {
     fn plugin_name(&self) -> &'static str {
-        "{{project_name}}"
+        ""
     }
 
     fn config_dump(&self) -> Result<Option<String>> {
@@ -57,12 +57,20 @@ impl Plugin for PluginImpl {
     ) -> utoipa::openapi::OpenApi {
         let _ = service_config
             .service(crate::api::logout)
-            .service(crate::api::user_list);
+            .service(crate::api::user_list)
+            .service(crate::api::current_user_info);
 
         #[derive(OpenApi)]
         #[openapi(
-            paths(crate::api::logout, crate::api::user_list),
-            components(schemas(crate::api::UserListResponse))
+            paths(
+                crate::api::logout,
+                crate::api::user_list,
+                crate::api::current_user_info
+            ),
+            components(schemas(
+                crate::api::UserListResponse,
+                crate::api::CurrentUserInfoResponse
+            ))
         )]
         struct ApiDoc;
 
