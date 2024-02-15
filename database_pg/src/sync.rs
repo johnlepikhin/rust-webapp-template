@@ -33,6 +33,10 @@ impl Pool {
         F: FnOnce(&mut diesel::PgConnection) -> Result<RESULT> + Send + 'static,
         RESULT: Send + 'static,
     {
-        self.with_connection(|conn| conn.build_transaction().read_committed().run(f))
+        let span = tracing::Span::current();
+        self.with_connection(|conn| {
+            let _span_guard = span.entered();
+            conn.build_transaction().repeatable_read().run(f)
+        })
     }
 }

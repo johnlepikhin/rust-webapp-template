@@ -12,5 +12,5 @@ secstr = "0.5.1"
 serde = { version = "1.0", features = ["derive"] }
 structdoc = "0.1.4"
 url = { version = "2", features = ["serde"] }
-
+tracing = "0.1.40"
 webapp_yaml_config = { path = "../webapp_yaml_config" }
