@@ -11,7 +11,7 @@ use webapp_core::plugin::{Plugin, PluginMetadata};
 pub struct Config {
     /// Some field in plugin config
     pub test_field: String,
-    pub secret: webapp_yaml_config::secret::SecUtf8,
+    pub secret: webapp_yaml_config::secret::SecUtf8String,
 }
 
 pub struct Metadata {
