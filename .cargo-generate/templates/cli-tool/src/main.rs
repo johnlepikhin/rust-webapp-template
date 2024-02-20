@@ -45,21 +45,7 @@ struct Application {
 
 impl Application {
     fn init_logger() -> Result<()> {
-        use slog::slog_o;
-        use slog::Drain;
-        let drain = slog_envlogger::new(slog_async::Async::default(
-            slog_term::CompactFormat::new(slog_term::TermDecorator::new().stderr().build())
-                .build()
-                .fuse(),
-        ));
-
-        let root_logger = slog::Logger::root(drain.fuse(), slog_o!());
-
-        slog_stdlog::init()?;
-
-        let logger = slog_scope::set_global_logger(root_logger);
-        logger.cancel_reset();
-
+        tracing_subscriber::fmt::init();
         Ok(())
     }
 
