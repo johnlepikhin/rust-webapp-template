@@ -58,3 +58,43 @@ impl Pool {
         .await
     }
 }
+
+#[macro_export]
+macro_rules! make_id {
+    ($id_name:ident) => {
+        #[derive(Debug, Eq, Hash, PartialEq, Clone, diesel::expression::AsExpression)]
+        #[diesel(sql_type = diesel::sql_types::BigInt)]
+        pub struct $id_name(i64);
+
+        impl Into<i64> for $id_name {
+            fn into(self) -> i64 {
+                self.0
+            }
+        }
+
+        impl<DB> Queryable<diesel::sql_types::BigInt, DB> for $id_name
+        where
+            DB: diesel::backend::Backend,
+            i64: diesel::deserialize::FromSql<diesel::sql_types::BigInt, DB>,
+        {
+            type Row = i64;
+
+            fn build(v: i64) -> diesel::deserialize::Result<Self> {
+                Ok($id_name(v))
+            }
+        }
+
+        impl<DB> diesel::serialize::ToSql<diesel::sql_types::BigInt, DB> for $id_name
+        where
+            DB: diesel::backend::Backend,
+            i64: diesel::serialize::ToSql<diesel::sql_types::BigInt, DB>,
+        {
+            fn to_sql<'b>(
+                &'b self,
+                out: &mut diesel::serialize::Output<'b, '_, DB>,
+            ) -> diesel::serialize::Result {
+                <i64>::to_sql(&self.0, out)
+            }
+        }
+    };
+}
